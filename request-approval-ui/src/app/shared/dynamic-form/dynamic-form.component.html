@@ -1,0 +1,71 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+
+  @for (field of schema; track field.name) {
+
+    <div>
+
+      <label>
+        {{ field.label }}
+      </label>
+
+      @switch (field.type) {
+
+        @case ('text') {
+
+          <input
+            type="text"
+            [formControlName]="field.name">
+        }
+
+        @case ('number') {
+
+          <input
+            type="number"
+            [formControlName]="field.name">
+        }
+
+        @case ('textarea') {
+
+          <textarea
+            [formControlName]="field.name">
+          </textarea>
+        }
+       
+          @case ('select') {
+          <select
+            [id]="field.name"
+            [formControlName]="field.name">
+
+            <option value="">
+              انتخاب کنید
+            </option>
+
+            @for (option of field.options ?? []; track option) {
+              <option [value]="option">
+                {{ option }}
+              </option>
+            }
+
+          </select>
+        }
+
+
+      }
+
+      @if (
+        form.controls[field.name].touched &&
+        form.controls[field.name].hasError('required')
+      ) {
+        <small>
+          {{ field.label }} is required.
+        </small>
+      }
+
+    </div>
+  }
+
+  <button type="submit">
+    Submit
+  </button>
+
+</form>

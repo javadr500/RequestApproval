@@ -1,0 +1,74 @@
+<div>
+
+  <h2>Requests</h2>
+
+  <button (click)="create()">
+    New Request
+  </button>
+
+</div>
+
+<table>
+
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Amount</th>
+      <th>Status</th>
+      <th>Assigned Role</th>
+      <th>Created At</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    @for (request of requests; track request.id) {
+
+      <tr>
+
+        <td>
+          {{ request.title }}
+        </td>
+
+        <td>
+          {{ request.amount }}
+        </td>
+
+        <td>
+          {{ getStatus(request.status) }}
+        </td>
+
+        <td>
+          {{ request.assignedRole }}
+        </td>
+
+        <td>
+          {{ request.createdAt | date }}
+        </td>
+
+        <td>
+
+          @if (request.status === 1) {
+
+            <button
+              (click)="approve(request.id)">
+              Approve
+            </button>
+
+            <button
+              (click)="reject(request.id)">
+              Reject
+            </button>
+
+          }
+
+        </td>
+
+      </tr>
+
+    }
+
+  </tbody>
+
+</table>
