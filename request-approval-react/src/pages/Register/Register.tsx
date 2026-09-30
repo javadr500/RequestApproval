@@ -7,7 +7,7 @@ import { getApiErrorMessage } from '../../api/api-error';
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login: saveToken } = useAuth();
+  const { login: useLogin } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,7 +18,7 @@ export default function Register() {
     try {
 
       const result = await register({ email, password });
-      saveToken(result.token);
+      useLogin(result.token);
       navigate('/requests');
     } catch (error) {
       alert(getApiErrorMessage(error));

@@ -9,7 +9,7 @@ import { getApiErrorMessage } from '../../api/api-error';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login: saveToken } = useAuth();
+  const { login: useLogin } = useAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,7 +25,7 @@ export default function Login() {
         password
       });
 
-      saveToken(result.token);
+      useLogin(result.token);
 
       navigate('/requests');
     } catch (error) {

@@ -1,11 +1,12 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RequestApproval.Api.DTOs.Requests;
 using RequestApproval.Api.Entities;
 using RequestApproval.Api.Repositories;
 using RequestApproval.Api.Services;
 using RequestApproval.Api.UnitOfWork;
+using System.Security.Claims;
 
 namespace RequestApproval.Api.Controllers;
 
@@ -36,7 +37,7 @@ public class RequestsController : ControllerBase
     {
         var userId = GetCurrentUserId();
 
-        var assignedRole =_routingService.GetAssignedRole(request.Amount);
+        var assignedRole = _routingService.GetAssignedRole(request.Amount);
 
         var entity = new Request(
             request.Title,
@@ -71,19 +72,16 @@ public class RequestsController : ControllerBase
 
     [HttpPost("{id:guid}/approve")]
     [Authorize(Roles = "Manager,Finance")]
-    public async Task<IActionResult> Approve(Guid id,CancellationToken cancellationToken)
+    public async Task<IActionResult> Approve(Guid id, CancellationToken cancellationToken)
     {
-        var request =
-            await _repository.GetByIdAsync(
-                id,
-                cancellationToken);
+        var request = await _repository.GetByIdAsync(id, cancellationToken);
 
         if (request == null)
             return NotFound();
 
-        var currentRole = GetCurrentUserRole();
+        var currentRoles = await GetCurrentUserRolesAsync();
 
-        if (request.AssignedRole != currentRole)
+        if (currentRoles.Contains(request.AssignedRole) == false)
             return Forbid();
 
         try
@@ -107,17 +105,14 @@ public class RequestsController : ControllerBase
         Guid id,
         CancellationToken cancellationToken)
     {
-        var request =
-            await _repository.GetByIdAsync(
-                id,
-                cancellationToken);
+        var request =await _repository.GetByIdAsync(id,cancellationToken);
 
         if (request == null)
             return NotFound();
 
-        var currentRole = GetCurrentUserRole();
+        var currentRoles = await GetCurrentUserRolesAsync();
 
-        if (request.AssignedRole != currentRole)
+        if (currentRoles.Contains(request.AssignedRole) == false)
             return Forbid();
 
         try
@@ -148,6 +143,21 @@ public class RequestsController : ControllerBase
                    ClaimTypes.Role)
                ?? throw new UnauthorizedAccessException();
     }
+
+    private async Task<IList<string>> GetCurrentUserRolesAsync()
+    {
+        var roles = User.FindAll(ClaimTypes.Role)
+        .Select(c => c.Value)
+        .ToList();
+
+        if (roles.Count == 0)
+            throw new UnauthorizedAccessException();
+
+        return roles;
+    }
+
+
+
 
     private static RequestDto ToDto(Request request)
     {
