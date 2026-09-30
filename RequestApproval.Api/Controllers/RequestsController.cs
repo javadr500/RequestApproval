@@ -36,8 +36,7 @@ public class RequestsController : ControllerBase
     {
         var userId = GetCurrentUserId();
 
-        var assignedRole =
-            _routingService.GetAssignedRole(request.Amount);
+        var assignedRole =_routingService.GetAssignedRole(request.Amount);
 
         var entity = new Request(
             request.Title,
@@ -57,8 +56,7 @@ public class RequestsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll(
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var userId = GetCurrentUserId();
         var role = GetCurrentUserRole();
@@ -73,9 +71,7 @@ public class RequestsController : ControllerBase
 
     [HttpPost("{id:guid}/approve")]
     [Authorize(Roles = "Manager,Finance")]
-    public async Task<IActionResult> Approve(
-        Guid id,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> Approve(Guid id,CancellationToken cancellationToken)
     {
         var request =
             await _repository.GetByIdAsync(

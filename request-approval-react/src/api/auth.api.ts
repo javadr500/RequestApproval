@@ -1,4 +1,5 @@
 
+import { useAuth } from '../auth/AuthContext';
 import { api } from './axios';
 
 export interface LoginRequest {
@@ -14,6 +15,11 @@ export interface RegisterRequest {
 export interface AuthResponse {
   token: string;
 }
+
+
+
+
+
 
 export async function login(
   request: LoginRequest
@@ -32,12 +38,16 @@ export async function register(
   const response = await api.post<AuthResponse>(
     '/auth/register',
     request, {
-      headers: {
-        'Content-Type': 'application/json'
+    headers: {
+      'Content-Type': 'application/json'
     }
   });
   return response.data;
 }
 
 
+
+function jwtDecode<T>(token: string) {
+  throw new Error('Function not implemented.');
+}
 

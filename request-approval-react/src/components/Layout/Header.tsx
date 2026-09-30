@@ -1,8 +1,39 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../auth/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+
+
+function useAuthUser(): string | null {
+  debugger
+  const { token } = useAuth();
+
+   if (!token) {
+    return null;
+  }
+
+  try {
+    const payload = jwtDecode<any>(token);
+
+    return (
+      payload.name ??
+      payload.unique_name ??
+      payload.email ??
+      payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ??
+      payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] ??
+      payload.sub ??
+      null
+    );
+  } catch {
+    return null;
+  }
+}
+
+
 
 export default function Header() {
   const { isAuthenticated, logout } = useAuth();
+  debugger;
+  const username = useAuthUser();
 
   return (
     <header className="header">
@@ -13,7 +44,10 @@ export default function Header() {
 
         {isAuthenticated && (
           <nav className="nav">
-            <Link to="/requests">درخواست‌ها</Link> | 
+             <span className="username">
+               {username}
+            </span>
+            <Link to="/requests">درخواست‌ها</Link> |
             <Link to="/requests/new">درخواست جدید</Link> |
 
             <button
