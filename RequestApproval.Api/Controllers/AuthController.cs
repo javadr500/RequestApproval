@@ -13,20 +13,17 @@ public class AuthController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ITokenService _tokenService;
 
-    public AuthController(
-        UserManager<ApplicationUser> userManager,
-        ITokenService tokenService)
+    public AuthController(UserManager<ApplicationUser> userManager,ITokenService tokenService) 
     {
         _userManager = userManager;
         _tokenService = tokenService;
     }
 
+
     [HttpPost("register")]
-    public async Task<IActionResult> Register(
-        RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var existingUser =
-            await _userManager.FindByEmailAsync(request.Email);
+        var existingUser = await _userManager.FindByEmailAsync(request.Email);
 
         if (existingUser != null)
             return BadRequest("User already exists.");
@@ -37,20 +34,13 @@ public class AuthController : ControllerBase
             Email = request.Email
         };
 
-        var result = await _userManager.CreateAsync(
-            user,
-            request.Password);
+        var result = await _userManager.CreateAsync(user,request.Password);
 
         if (!result.Succeeded)
             return BadRequest(result.Errors);
 
-        await _userManager.AddToRoleAsync(
-            user,
-            "Employee");
-
-        var (token, expiresAt) =
-            await _tokenService.CreateTokenAsync(user);
-
+        await _userManager.AddToRoleAsync(user,"Employee");
+        var (token, expiresAt) =await _tokenService.CreateTokenAsync(user);
         return Ok(new AuthResponse(token, expiresAt));
     }
 
